@@ -1,65 +1,4 @@
-<?php
-// Bao gồm file kết nối cơ sở dữ liệu
-include "../config/db.php"; // Đảm bảo đường dẫn chính xác đến file db.php
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Nhận dữ liệu từ form
-    $title = $_POST['title'];
-    $content = $_POST['content'];
-    $category_id = $_POST['category_id'];
-    $created_at = date('Y-m-d H:i:s'); // Lấy ngày giờ hiện tại
-
-    // Xử lý ảnh upload
-    $image = '';
-    if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
-        $imageName = basename($_FILES['image']['name']);
-        $imageExtension = strtolower(pathinfo($imageName, PATHINFO_EXTENSION));
-        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif']; // Các loại file được phép
-        if (in_array($imageExtension, $allowedExtensions)) {
-            // Tạo tên file duy nhất để tránh trùng lặp
-            $image = 'uploads/' . uniqid() . '-' . $imageName;
-            // Di chuyển ảnh đến thư mục 'uploads'
-            if (move_uploaded_file($_FILES['image']['tmp_name'], $image)) {
-                echo "Ảnh đã được upload thành công.";
-            } else {
-                echo "Lỗi khi upload ảnh.";
-                $image = ''; // Nếu không upload được ảnh, để giá trị mặc định là rỗng
-            }
-        } else {
-            echo "Chỉ chấp nhận các định dạng ảnh: jpg, jpeg, png, gif.";
-            $image = ''; // Nếu ảnh không hợp lệ, để giá trị mặc định là rỗng
-        }
-    }
-
-    try {
-        // Lấy kết nối từ lớp Database
-        $conn = Database::getConnection();
-
-        // Thực hiện câu lệnh INSERT vào cơ sở dữ liệu
-        $sql = "INSERT INTO news (title, content, image, created_at, category_id) 
-                VALUES (:title, :content, :image, :created_at, :category_id)";
-
-        // Chuẩn bị câu lệnh SQL
-        $stmt = $conn->prepare($sql);
-
-        // Liên kết các giá trị với các tham số trong câu lệnh SQL
-        $stmt->bindParam(':title', $title);
-        $stmt->bindParam(':content', $content);
-        $stmt->bindParam(':image', $image);
-        $stmt->bindParam(':created_at', $created_at);
-        $stmt->bindParam(':category_id', $category_id);
-
-        // Thực thi câu lệnh
-        if ($stmt->execute()) {
-            echo "Tin tức đã được thêm thành công!";
-        } else {
-            echo "Lỗi khi thêm tin tức vào cơ sở dữ liệu.";
-        }
-    } catch (PDOException $e) {
-        echo "Lỗi: " . $e->getMessage();
-    }
-}
-?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -75,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <h1 class="text-center">Thêm Tin Tức Mới</h1>
     </header>
 
-    <form action="add.php" method="POST" enctype="multipart/form-data">
+    <form action="../admin/news/add.php" method="POST" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="title" class="form-label">Title</label>
             <input type="text" class="form-control" id="title" name="title" required>

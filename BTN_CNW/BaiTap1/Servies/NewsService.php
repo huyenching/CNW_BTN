@@ -2,14 +2,17 @@
 require_once 'Models/News.php';
 require_once 'config/db.php';
 
-class NewsService {
+class NewsService
+{
     private $db;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->db = Database::getConnection(); // Kết nối tới CSDL
     }
 
-    public function getAllNews() {
+    public function getAllNews()
+    {
         try {
             $sql = "SELECT * FROM news";
             $stmt = $this->db->prepare($sql);
@@ -36,7 +39,8 @@ class NewsService {
     }
 
 
-    public function getNewsById($id) {
+    public function getNewsById($id)
+    {
         try {
             $sql = "SELECT * FROM news WHERE id = :id";
             $stmt = $this->db->prepare($sql);
@@ -62,56 +66,20 @@ class NewsService {
     }
 
 
-    public function addNews($news) {
-        try {
-            $sql = "INSERT INTO news (title, content, image, created_at, category_id) VALUES (:title, :content, :image, :created_at, :category_id)";
-            $stmt = $this->db->prepare($sql);
-            $title = $news->getTitle();
-            $content = $news->getContent();
-            $image = $news->getImage();
-            $created_at = $news->getCreatedAt();
-            $category_id = $news->getCategoryId();
-            $stmt->bindParam(':title', $title, PDO::PARAM_STR);
-
-            $stmt->bindParam(':content', $content);
-            $stmt->bindParam(':image', $image, PDO::PARAM_STR);
-            $stmt->bindParam(':created_at', $created_at, PDO::PARAM_STR);
-            $stmt->bindParam(':category_id', $category_id, PDO::PARAM_INT);
-            return $stmt->execute();
-        } catch (Exception $e) {
-            echo "Error: " . $e->getMessage();
-            return false;
-        }
+    public function add(news $news)
+    {
+        return $this->model->add($news);
     }
 
-    public function updateNews($news) {
-        try {
-            $sql = "UPDATE news SET title = :title, content = :content, image = :image, created_at = :created_at, category_id = :category_id WHERE id = :id";
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':id', $news->getId());
-            $stmt->bindParam(':title', $news->getTitle());
-            $stmt->bindParam(':content', $news->getContent());
-            $stmt->bindParam(':image', $news->getImage());
-            $stmt->bindParam(':created_at', $news->getCreatedAt());
-            $stmt->bindParam(':category_id', $news->getCategoryId());
-            return $stmt->execute();
-        } catch (Exception $e) {
-            echo "Error: " . $e->getMessage();
-            return false;
-        }
+    public function edit($news)
+    {
+        return $this->model->edit($news);
     }
 
 
-    public function deleteNews($id) {
-        try {
-            $sql = "DELETE FROM news WHERE id = :id";
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            return $stmt->execute();
-        } catch (Exception $e) {
-            echo "Error: " . $e->getMessage();
-            return false;
-        }
+    public function delete($id)
+    {
+        return $this->model->delete($id);
     }
 }
 ?>
