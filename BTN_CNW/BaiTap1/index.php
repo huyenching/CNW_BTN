@@ -1,7 +1,12 @@
 <?php
-require_once 'config/db.php'; // Kết nối CSDL
+require_once '../BaiTap1/config/db.php'; // Kết nối CSDL
 require_once '../BaiTap1/Controllers/NewsController.php';
+require_once '../BaiTap1/Models/News.php';
 
+// Kết nối cơ sở dữ liệu
+$db = Database::connect();
+
+// Khởi tạo controller
 $controller = $_GET['controller'] ?? 'news';
 $action = $_GET['action'] ?? 'index';
 
@@ -15,4 +20,6 @@ if ($controller == 'news' && $action == 'index') {
 } elseif ($controller == 'news' && $action == 'search') {
     $keyword = $_GET['keyword'] ?? '';
     $newsController->search($keyword);
+} else {
+    echo "Invalid route!";
 }

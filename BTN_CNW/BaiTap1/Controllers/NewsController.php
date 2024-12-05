@@ -1,5 +1,5 @@
 <?php
-require_once '../Models/News.php';
+require_once '../BaiTap1/Models/News.php';
 
 class NewsController {
     private $newsModel;
@@ -7,18 +7,19 @@ class NewsController {
     public function __construct($db) {
         $this->newsModel = new News($db);
     }
+
     public function index() {
-        $news = $this->newsModel->getAllNews();
-        require_once '../views/home/index.php';
+        $newsList = $this->newsModel->getAllNews();
+        include '../BaiTap1/Views/home/index.php';
     }
 
     public function detail($id) {
-        $newsDetail = $this->newsModel->getNewsById($id);
-        require_once '../views/news/detail.php';
+        $newsItem = $this->newsModel->getNewsById($id);
+        include '../BaiTap1/Views/news/detail.php';
     }
 
     public function search($keyword) {
         $results = $this->newsModel->searchNews($keyword);
-        require_once '../views/news/search.php';
+        include '../BaiTap1/Views/news/search.php';
     }
 }
